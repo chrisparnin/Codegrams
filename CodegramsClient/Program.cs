@@ -10,6 +10,7 @@ using Codegrams.Collection;
 using Codegrams.Collection.RepoSource;
 using Codegrams.Persistance;
 using Codegrams.Reader;
+using Codegrams.Services.DiffParsing;
 using Codegrams.Services.Summary;
 using CodegramsClient.Data;
 
@@ -84,6 +85,20 @@ namespace CodegramsClient
             PrintDiff(@"C:\data\commits\test2.diff");
             PrintDiff(@"C:\data\commits\test3.diff");
             PrintDiff(@"C:\data\commits\test4.diff");
+
+            var generator = new CodegramGenerator();
+
+            var codegram = generator.GenerateFromDiff(@"C:\data\commits\test4.diff", 3, "codegrams.db");
+            codegram.Print();
+
+            codegram = generator.GenerateFromDiff(@"C:\data\commits\test3.diff", 3, "codegrams.db");
+            codegram.Print();
+
+            codegram = generator.GenerateFromDiff(@"C:\data\commits\test2.diff", 3, "codegrams.db");
+            codegram.Print();
+
+            codegram = generator.GenerateFromDiff(@"C:\data\commits\test.diff", 3, "codegrams.db");
+            codegram.Print();
 
             Console.ReadKey();
         }

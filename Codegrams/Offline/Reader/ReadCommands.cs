@@ -27,7 +27,7 @@ namespace Codegrams.Reader
 
         public static string Escape(string value)
         {
-            return value.Replace("'", "''");
+            return value.Replace("'", "''").Replace("\\","\\\\");
         }
 
         public static int IdentifierCount(SQLiteConnection sqlite)
@@ -86,10 +86,11 @@ namespace Codegrams.Reader
             string sql = @"
                 SELECT Value 
                 FROM [WordId] 
-                WHERE [Word] = '{0}'
+                WHERE [Word] = @Phrase
                 ";
             SQLiteCommand cmd = sqlite.CreateCommand();
-            cmd.CommandText = string.Format(sql, Escape(word));
+            cmd.CommandText = sql;
+            cmd.Parameters.Add(new SQLiteParameter("@Phrase", word));
             SQLiteDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
             {
@@ -103,10 +104,11 @@ namespace Codegrams.Reader
             string sql = @"
                 SELECT WordFreq 
                 FROM [WordId] 
-                WHERE [Word] = '{0}'
+                WHERE [Word] = @Phrase
                 ";
             SQLiteCommand cmd = sqlite.CreateCommand();
-            cmd.CommandText = string.Format(sql, Escape(word));
+            cmd.CommandText = sql;
+            cmd.Parameters.Add(new SQLiteParameter("@Phrase", word));
             SQLiteDataReader reader = cmd.ExecuteReader();
             while (reader.Read() && reader.HasRows)
             {
@@ -121,10 +123,11 @@ namespace Codegrams.Reader
             string sql = @"
                 SELECT IdentFreq 
                 FROM [WordId] 
-                WHERE [Word] = '{0}'
+                WHERE [Word] = @Phrase
                 ";
             SQLiteCommand cmd = sqlite.CreateCommand();
-            cmd.CommandText = string.Format(sql, Escape(word));
+            cmd.CommandText = sql;
+            cmd.Parameters.Add(new SQLiteParameter("@Phrase", word));
             SQLiteDataReader reader = cmd.ExecuteReader();
             while (reader.Read() && reader.HasRows)
             {
@@ -138,10 +141,11 @@ namespace Codegrams.Reader
             string sql = @"
                 SELECT WordSeqValue 
                 FROM [SeqFrequency] 
-                WHERE [Key] = '{0}'
+                WHERE [Key] = @Phrase
                 ";
             SQLiteCommand cmd = sqlite.CreateCommand();
-            cmd.CommandText = string.Format(sql, Escape(phrase));
+            cmd.CommandText = sql;
+            cmd.Parameters.Add(new SQLiteParameter("@Phrase", phrase));
             SQLiteDataReader reader = cmd.ExecuteReader();
             while (reader.Read() && reader.HasRows)
             {
@@ -155,10 +159,11 @@ namespace Codegrams.Reader
             string sql = @"
                 SELECT IdentSeqValue 
                 FROM [SeqFrequency] 
-                WHERE [Key] = '{0}'
+                WHERE [Key] = @Phrase
                 ";
             SQLiteCommand cmd = sqlite.CreateCommand();
-            cmd.CommandText = string.Format(sql, Escape(phrase));
+            cmd.CommandText = sql;
+            cmd.Parameters.Add(new SQLiteParameter("@Phrase", phrase));
             SQLiteDataReader reader = cmd.ExecuteReader();
             while (reader.Read() && reader.HasRows)
             {

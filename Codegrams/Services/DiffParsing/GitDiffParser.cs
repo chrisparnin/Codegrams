@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Codegrams.Services.Summary
+namespace Codegrams.Services.DiffParsing
 {
     public class GitDiffParser
     {

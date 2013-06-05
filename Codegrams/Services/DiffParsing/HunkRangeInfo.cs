@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Codegrams.Services.Summary
+namespace Codegrams.Services.DiffParsing
 {
     public class HunkRangeInfo
     {
-        private List<string> DiffLines { get; set; }
+        public List<string> DiffLines { get; set; }
         public string FileName { get; set; }
  
         public HunkRangeInfo(HunkRange originaleHunkRange, HunkRange newHunkRange, IEnumerable<string> diffLines, string fileName)
