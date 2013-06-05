@@ -55,19 +55,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Analysis\CodegramBuilder.cs" />
-    <Compile Include="Analysis\Counting\CodegramCounter.cs" />
-    <Compile Include="Analysis\Counting\Patterns.cs" />
-    <Compile Include="Analysis\UnicodeEncoder.cs" />
-    <Compile Include="Collection\BuildRepository.cs" />
-    <Compile Include="Collection\IRepositorySource.cs" />
-    <Compile Include="Collection\ProjectSources.cs" />
-    <Compile Include="Collection\RepoSource\Github.cs" />
-    <Compile Include="Persistance\CodegramsDB.cs" />
-    <Compile Include="Persistance\Contracts\CodegramsContract.cs" />
+    <Compile Include="Offline\Analysis\CodegramBuilder.cs" />
+    <Compile Include="Offline\Analysis\Counting\CodegramCounter.cs" />
+    <Compile Include="Offline\Analysis\Counting\Patterns.cs" />
+    <Compile Include="Offline\Analysis\UnicodeEncoder.cs" />
+    <Compile Include="Offline\Collection\BuildRepository.cs" />
+    <Compile Include="Offline\Collection\IRepositorySource.cs" />
+    <Compile Include="Offline\Collection\ProjectSources.cs" />
+    <Compile Include="Offline\Collection\RepoSource\Github.cs" />
+    <Compile Include="Offline\Persistance\CodegramsDB.cs" />
+    <Compile Include="Offline\Persistance\Contracts\CodegramsContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reader\CodegramsReader.cs" />
     <Compile Include="Reader\ReadCommands.cs" />
+    <Compile Include="Services\Summary\GitDiffParser.cs" />
+    <Compile Include="Services\Summary\HunkRange.cs" />
+    <Compile Include="Services\Summary\HunkRangeInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="x64\SQLite.Interop.dll">
@@ -80,6 +83,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

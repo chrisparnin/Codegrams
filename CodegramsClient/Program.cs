@@ -10,13 +10,14 @@ using Codegrams.Collection;
 using Codegrams.Collection.RepoSource;
 using Codegrams.Persistance;
 using Codegrams.Reader;
+using Codegrams.Services.Summary;
 using CodegramsClient.Data;
 
 namespace CodegramsClient
 {
     class Program
     {
-        static void Main(string[] args)
+        public static void Run()
         {
             bool download = false;
             bool analyze = false;
@@ -51,15 +52,15 @@ namespace CodegramsClient
             var reader = new CodegramsReader();
             reader.Connect("codegrams.db");
 
-            Console.WriteLine(reader.SequenceIdentifierFrequency(new string[]{"using", "System"}));
+            Console.WriteLine(reader.SequenceIdentifierFrequency(new string[] { "using", "System" }));
             Console.WriteLine(reader.SequenceWordFrequency(new string[] { "using", "System" }));
 
-            Console.WriteLine(reader.LineSalience(2,"using System"));
+            Console.WriteLine(reader.LineSalience(2, "using System"));
             Console.WriteLine(reader.LineSalience(2, "Console.WriteLine"));
             Console.WriteLine(reader.LineSalience(2, "CodegramsDB.Init"));
             Console.WriteLine(reader.LineSalience(2, "using Codegrams.Persistance"));
 
-            var lines = 
+            var lines =
             File.ReadAllText(@"C:\DEV\github\Codegrams\CodegramsClient\Program.cs")
                 .Split('\n')
                 .Select(line =>
@@ -74,8 +75,36 @@ namespace CodegramsClient
             {
                 Console.WriteLine(line.Salience + ":" + line.Line);
             }
+        }
 
-            Console.WriteLine();
+        static void Main(string[] args)
+        {
+            //Run();
+            PrintDiff(@"C:\data\commits\test.diff");
+            PrintDiff(@"C:\data\commits\test2.diff");
+            PrintDiff(@"C:\data\commits\test3.diff");
+            PrintDiff(@"C:\data\commits\test4.diff");
+
+            Console.ReadKey();
+        }
+
+        static void PrintDiff(string diffFile)
+        {
+            GitDiffParser parser = new GitDiffParser();
+
+            var chunks = parser.Parse(File.ReadAllText(diffFile));
+            foreach (var file in chunks)
+            {
+                foreach (var hunk in file)
+                {
+                    Console.WriteLine(string.Format("{0} {1} #{2} {3}",
+                            hunk.FileName,
+                            hunk.NewHunkRange.StartingLineNumber,
+                            hunk.NewHunkRange.NumberOfLines,
+                            hunk.IsModification
+                        ));
+                }
+            }
         }
     }
 }

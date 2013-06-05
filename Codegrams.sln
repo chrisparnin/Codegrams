@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codegrams_old", "Codegrams_old\Codegrams_old.csproj", "{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodegramsClient", "CodegramsClient\CodegramsClient.csproj", "{72B039DB-B09E-49AF-BC6F-62A159629A51}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codegrams", "Codegrams\Codegrams.csproj", "{7BB90C96-238A-47CC-8CD9-99E65E8FE9F5}"
@@ -19,21 +17,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Debug|Any CPU.Build.0 = Debug|x86
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Debug|x64.ActiveCfg = Debug|x64
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Debug|x64.Build.0 = Debug|x64
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Debug|x86.ActiveCfg = Debug|x86
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Debug|x86.Build.0 = Debug|x86
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Release|Any CPU.ActiveCfg = Release|x86
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Release|Mixed Platforms.Build.0 = Release|x86
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Release|x64.ActiveCfg = Release|x64
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Release|x64.Build.0 = Release|x64
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Release|x86.ActiveCfg = Release|x86
-		{FF079AD1-D12D-4BA1-A50F-E30BE2AC14BB}.Release|x86.Build.0 = Release|x86
 		{72B039DB-B09E-49AF-BC6F-62A159629A51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{72B039DB-B09E-49AF-BC6F-62A159629A51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72B039DB-B09E-49AF-BC6F-62A159629A51}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
