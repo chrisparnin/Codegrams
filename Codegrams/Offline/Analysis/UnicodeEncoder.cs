@@ -16,7 +16,8 @@ namespace Codegrams.Analysis
         {
             var words = (CodegramCounter.Identifiers(phrase)
                 .SelectMany(id => CodegramCounter.Words(id))
-                .Select(w => lookup(w)));
+                .Select(w => lookup(w)))
+                .ToList();
 
             if( words.Any( w => w == -1 ) )
                 return null;

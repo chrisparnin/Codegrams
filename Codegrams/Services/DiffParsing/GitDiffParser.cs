@@ -18,19 +18,22 @@ namespace Codegrams.Services.DiffParsing
         //}
         public IEnumerable<IEnumerable<HunkRangeInfo>> Parse(string text)
         {
+            var files = new List<IEnumerable<HunkRangeInfo>>();
             foreach (var chunk in SplitFileHunks(text))
             {
                 var split = chunk.Split('\n').AsEnumerable();
 
-                yield return GetUnifiedFormatHunkLines(split)
+                var fileHunks = GetUnifiedFormatHunkLines(split)
                    .Where(line => !string.IsNullOrEmpty(line.Item1))
                    .Select(line => new HunkRangeInfo(
                                        new HunkRange(GetHunkOriginalFile(line.Item1)),
                                        new HunkRange(GetHunkNewFile(line.Item1)),
                                        line.Item2, GetFileName(split)
                                       )
-                   );
+                   ).ToList();
+                files.Add(fileHunks);
             }
+            return files;
         }
 
         protected List<string> SplitFileHunks(string text)

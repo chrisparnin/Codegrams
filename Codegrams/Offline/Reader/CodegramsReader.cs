@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Codegrams.Analysis;
 using Codegrams.Analysis.Counting;
+using Codegrams.Offline.Reader;
 
 namespace Codegrams.Reader
 {
@@ -92,12 +93,14 @@ namespace Codegrams.Reader
         }
         private SQLiteConnection Connection { get; set; }
         private string DBPath { get; set; }
+        private Cache Cache { get; set; }
 
         public void Connect(string path)
         {
             Connection = new SQLiteConnection(string.Format("Data Source={0}", path));
             Connection.Open();
             DBPath = path;
+            Cache = new Cache(25.0);
         }
 
         public void Disconnect()
@@ -107,30 +110,31 @@ namespace Codegrams.Reader
                 Connection.Close();
                 Connection = null;
             }
+            Cache = null;
         }
 
         public int SequenceWordFrequency(IEnumerable<string> gram)
         {
             string phrase = string.Join(".", gram);
             string key = UnicodeEncoder.GetUnicodeKeyFromString(phrase,
-                word => ReadCommands.LookupWordId(Connection, word));
+                word => ReadCommands.LookupWordId(Connection, Cache, word));
 
             if (key == null)
                 return 0;
 
-            return ReadCommands.LookupWordSequenceFrequency(Connection, key);
+            return ReadCommands.LookupWordSequenceFrequency(Connection, Cache, key);
         }
 
         public int SequenceIdentifierFrequency(IEnumerable<string> gram)
         {
             string phrase = string.Join(".", gram);
             string key = UnicodeEncoder.GetUnicodeKeyFromString(phrase,
-                word => ReadCommands.LookupWordId(Connection, word));
+                word => ReadCommands.LookupWordId(Connection, Cache, word));
 
             if (key == null)
                 return 0;
 
-            return ReadCommands.LookupIdentifierSequenceFrequency(Connection, key);
+            return ReadCommands.LookupIdentifierSequenceFrequency(Connection, Cache, key);
         }
 
         public double LineSalience(int n, string line)
@@ -148,12 +152,12 @@ namespace Codegrams.Reader
 
             foreach (var word in words)
             {
-                sumWords += (ReadCommands.LookupWordFrequency(Connection, word) + 1) / (double)WordCount;
+                sumWords += (ReadCommands.LookupWordFrequency(Connection, Cache, word) + 1) / (double)WordCount;
             }
 
             foreach (var ident in identifiers)
             {
-                sumIdentifiers += (ReadCommands.LookupIdentifierFrequency(Connection, ident)+1) / (double)IdentifierCount;
+                sumIdentifiers += (ReadCommands.LookupIdentifierFrequency(Connection, Cache, ident)+1) / (double)IdentifierCount;
             }
 
             foreach (var wordGram in wordGrams)

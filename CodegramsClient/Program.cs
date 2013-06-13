@@ -86,18 +86,18 @@ namespace CodegramsClient
             PrintDiff(@"C:\data\commits\test3.diff");
             PrintDiff(@"C:\data\commits\test4.diff");
 
-            var generator = new CodegramGenerator();
+            var generator = new CodegramGenerator( "codegrams.db");
 
-            var codegram = generator.GenerateFromDiff(@"C:\data\commits\test4.diff", 3, "codegrams.db");
+            var codegram = generator.GenerateFromDiffFile(@"C:\data\commits\test4.diff", 3);
             codegram.Print();
 
-            codegram = generator.GenerateFromDiff(@"C:\data\commits\test3.diff", 3, "codegrams.db");
+            codegram = generator.GenerateFromDiffFile(@"C:\data\commits\test3.diff", 3);
             codegram.Print();
 
-            codegram = generator.GenerateFromDiff(@"C:\data\commits\test2.diff", 3, "codegrams.db");
+            codegram = generator.GenerateFromDiffFile(@"C:\data\commits\test2.diff", 3);
             codegram.Print();
 
-            codegram = generator.GenerateFromDiff(@"C:\data\commits\test.diff", 3, "codegrams.db");
+            codegram = generator.GenerateFromDiffFile(@"C:\data\commits\test.diff", 3);
             codegram.Print();
 
             Console.ReadKey();

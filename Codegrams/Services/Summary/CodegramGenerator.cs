@@ -12,23 +12,32 @@ namespace Codegrams.Services.Summary
 {
     public class CodegramGenerator
     {
-        public Codegram GenerateFromDiff(string diffFile, int maxSize, string dbPath)
+        CodegramsReader reader;
+        public CodegramGenerator(string dbPath)
+        {
+            reader = new CodegramsReader();
+            reader.Connect(dbPath);
+
+        }
+        public Codegram GenerateFromDiffFile(string diffFile, int maxSize)
+        {
+            return GenerateCodegramFromDiffContent(File.ReadAllText(diffFile), maxSize);
+        }
+
+        public Codegram GenerateCodegramFromDiffContent(string diffContent, int maxSize)
         {
             GitDiffParser parser = new GitDiffParser();
-            var files = parser.Parse(File.ReadAllText(diffFile));
-
-            var reader = new CodegramsReader();
-            reader.Connect(dbPath);
+            var files = parser.Parse(diffContent);
 
             var codegram = new Codegram();
             codegram.Filegrams = new List<Filegram>();
 
-            foreach( var file in files )
+            foreach (var file in files)
             {
                 var filegram = new Filegram();
                 filegram.FileName = file.First().FileName;
 
-                foreach( var chunk in file )
+                foreach (var chunk in file)
                 {
                     var salient = chunk.DiffLines
                     .Select(line =>
@@ -43,14 +52,13 @@ namespace Codegrams.Services.Summary
 
                     var lines = salient
                     .Take(maxSize)
-                    .Select( salientLine => new Linegram(){Line= salientLine.Line}) ;
+                    .Select(salientLine => new Linegram() { Line = salientLine.Line });
 
                     filegram.Linegrams = lines.ToList();
                 }
                 codegram.Filegrams.Add(filegram);
             }
 
-            reader.Disconnect();
             return codegram;
         }
     }
