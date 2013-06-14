@@ -108,9 +108,9 @@ namespace CodegramsClient
             GitDiffParser parser = new GitDiffParser();
 
             var chunks = parser.Parse(File.ReadAllText(diffFile));
-            foreach (var file in chunks)
+            foreach (var file in chunks.Files)
             {
-                foreach (var hunk in file)
+                foreach (var hunk in file.Hunks)
                 {
                     Console.WriteLine(string.Format("{0} {1} #{2} {3}",
                             hunk.FileName,
