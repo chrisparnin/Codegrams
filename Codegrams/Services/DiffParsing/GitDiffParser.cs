@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Codegrams.Services.DiffParsing
 {
@@ -16,14 +19,19 @@ namespace Codegrams.Services.DiffParsing
         //           where !string.IsNullOrEmpty(hunkLine.Item1)
         //           select new HunkRangeInfo(new HunkRange(GetHunkOriginalFile(hunkLine.Item1)), new HunkRange(GetHunkNewFile(hunkLine.Item1)), hunkLine.Item2, hunkLine.Item3);
         //}
-        public IEnumerable<IEnumerable<HunkRangeInfo>> Parse(string text)
+        public DiffInfo Parse(string text)
         {
-            var files = new List<IEnumerable<HunkRangeInfo>>();
+            var diffInfo = new DiffInfo();
+
+            diffInfo.Author =  GetAuthorFromDiff(text);
+            diffInfo.Message = GetMessageFromDiff(text);
+            diffInfo.Date = GetDateFromDiff(text);
+
             foreach (var chunk in SplitFileHunks(text))
             {
                 var split = chunk.Split('\n').AsEnumerable();
 
-                var fileHunks = GetUnifiedFormatHunkLines(split)
+                var hunks = GetUnifiedFormatHunkLines(split)
                    .Where(line => !string.IsNullOrEmpty(line.Item1))
                    .Select(line => new HunkRangeInfo(
                                        new HunkRange(GetHunkOriginalFile(line.Item1)),
@@ -31,9 +39,9 @@ namespace Codegrams.Services.DiffParsing
                                        line.Item2, GetFileName(split)
                                       )
                    ).ToList();
-                files.Add(fileHunks);
+                diffInfo.Files.Add(new FileDiff { Hunks = hunks });
             }
-            return files;
+            return diffInfo;
         }
 
         protected List<string> SplitFileHunks(string text)
@@ -88,6 +96,69 @@ namespace Codegrams.Services.DiffParsing
             }
 
             yield return new Tuple<string, IEnumerable<string>>(hunkLine, diffs);
+        }
+
+        public string GetAuthorFromDiff(string diff)
+        {
+            return GetInfoFromHeader(diff, "Author:");
+        }
+
+        public DateTime GetDateFromDiff(string diff)
+        {
+            var date = GetInfoFromHeader(diff, "Date:");
+            string format = "ddd MMM d HH:mm:ss yyyy zzz";
+            return DateTimeOffset.ParseExact(date, format, CultureInfo.InvariantCulture).DateTime;
+        }
+
+
+        private static string GetInfoFromHeader(string diff, string header)
+        {
+            if (string.IsNullOrEmpty(diff))
+                throw new ArgumentException();
+            using (var strReader = new StringReader(diff))
+            {
+                do
+                {
+                    var line = strReader.ReadLine();
+                    if (line.StartsWith(header))
+                    {
+                        return string.Join(":",line.Split(':').Skip(1)).Trim();
+                    }
+                }
+                while (strReader.Peek() != -1);
+            }
+            return null;
+        }
+
+        public string GetMessageFromDiff(string diff)
+        {
+            if (string.IsNullOrEmpty(diff))
+                throw new ArgumentException();
+            using (var strReader = new StringReader(diff))
+            {
+                StringBuilder builder = null;
+                do
+                {
+                    var line = strReader.ReadLine();
+
+                    if (line.StartsWith("diff --git"))
+                        break;
+
+                    if (builder != null)
+                    {
+                        builder.AppendLine(line);
+                    }
+
+                    if (line.StartsWith("Date:"))
+                    {
+                        builder = new StringBuilder();
+                    }
+                }
+                while (strReader.Peek() != -1);
+                if (builder == null)
+                    return null;
+                return builder.ToString().Trim();
+            }
         }
 
         public string GetFileName(IEnumerable<string> lines)

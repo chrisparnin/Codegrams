@@ -11,8 +11,6 @@ namespace Codegrams.Offline.Reader
     internal class Cache
     {
         private Object Statlock = new object();
-        private int ItemCount;
-        private long size;
         private MemoryCache MemCache;
         private CacheItemPolicy CIPOL = new CacheItemPolicy();
 

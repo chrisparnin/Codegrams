@@ -140,10 +140,10 @@ namespace Codegrams.Reader
         public double LineSalience(int n, string line)
         {
             var counter = new CodegramCounter();
-            var identifiersGrams = counter.IdentifierSequences(n, line);
-            var wordGrams = counter.WordSequences(n, line);
-            var words = counter.AllWords(line).Select( w => w.ToLower());
-            var identifiers = counter.AllIdentifiers(line).Select( ident => ident.ToLower() );
+            var identifiersGrams = counter.IdentifierSequences(n, line).ToList();
+            var wordGrams = counter.WordSequences(n, line).ToList();
+            var words = counter.AllWords(line).Select( w => w.ToLower()).ToList();
+            var identifiers = counter.AllIdentifiers(line).Select( ident => ident.ToLower() ).ToList();
 
             var sumIdentifierGrams = 0.0;
             var sumWordGrams = 0.0;
@@ -175,9 +175,15 @@ namespace Codegrams.Reader
             {
                 return 0.0;
             }
+            var multiplier = 1.0;
+            if (words.Count == 1 && identifiers.Count == 1) 
+            {
+                //Console.Write(line);
+                multiplier = 0.01;
+            }
 
-            return vals.Where(s => s > 0.0).Min() / vals.Max();
-
+            var salience = (vals.Where(s => s > 0.0).Min() / vals.Max()) * multiplier;
+            return salience;
             //return sumIdentifierGrams / IdentifierCount;
         }
     }

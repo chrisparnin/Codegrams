@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Codegrams.Grams;
 using Codegrams.Reader;
 using Codegrams.Services.DiffParsing;
+using Codegrams.Services.Metrics;
 
 namespace Codegrams.Services.Summary
 {
@@ -27,32 +28,21 @@ namespace Codegrams.Services.Summary
         public Codegram GenerateCodegramFromDiffContent(string diffContent, int maxSize)
         {
             GitDiffParser parser = new GitDiffParser();
-            var files = parser.Parse(diffContent);
+            var diffInfo = parser.Parse(diffContent);
 
             var codegram = new Codegram();
             codegram.Filegrams = new List<Filegram>();
 
-            foreach (var file in files)
+            CrossSimiliarity(diffInfo.Files);
+
+            foreach (var file in diffInfo.Files)
             {
                 var filegram = new Filegram();
-                filegram.FileName = file.First().FileName;
+                filegram.FileName = file.Hunks.First().FileName;
 
-                foreach (var chunk in file)
+                foreach (var chunk in file.Hunks)
                 {
-                    var salient = chunk.DiffLines
-                    .Select(line =>
-                        new
-                        {
-                            Salience = reader.LineSalience(2, line),
-                            Line = line
-                        }
-                    )
-                    .OrderBy(salientLine => 1 - salientLine.Salience)
-                    .ToList();
-
-                    var lines = salient
-                    .Take(maxSize)
-                    .Select(salientLine => new Linegram() { Line = salientLine.Line });
+                    var lines = SalientLines(maxSize, chunk);
 
                     filegram.Linegrams = lines.ToList();
                 }
@@ -60,6 +50,80 @@ namespace Codegrams.Services.Summary
             }
 
             return codegram;
+        }
+
+        private Dictionary<string, int> LineFrequency(List<string> allLines)
+        {
+            var freq = new Dictionary<string, int>();
+            foreach (var line in allLines)
+            {
+                if (!freq.ContainsKey(line))
+                    freq[line] = 0;
+                freq[line]++;
+            }
+            return freq;
+        }
+
+        private void CrossSimiliarity(IEnumerable<FileDiff> files)
+        {
+            var allLines = new List<string>();
+            foreach (var file in files)
+            {
+                foreach (var chunk in file.Hunks)
+                {
+                    allLines.AddRange(chunk.DiffLines);
+                }
+            }
+
+            var freq = LineFrequency(allLines);
+
+            allLines = allLines.Distinct().ToList();
+
+            var crossSimiliarity = new double[allLines.Count][];
+            int i = 0;
+            foreach (var line in allLines)
+            {
+                int j = 0;
+                crossSimiliarity[i] = new double[allLines.Count];
+                foreach (var otherLine in allLines)
+                {
+                    double val = 0.0;
+                    if (i != j)
+                    {
+                        val = LineSimiliarity.CompareStrings(line, otherLine);
+                        if (double.IsNaN(val))
+                        {
+                            val = 0.0;
+                        }
+                    }
+                    crossSimiliarity[i][j] = val * freq[line];
+                    j++;
+                }
+                i++;
+            }
+            var sum = crossSimiliarity.Sum(row => row.Sum())/ (allLines.Count);
+            var sumFreq = freq.Sum( pair => pair.Value - 1 );
+            Console.WriteLine("line freq sum {0}", sumFreq);
+            Console.WriteLine("cross-sim sum {0}", sum);
+        }
+
+        private IEnumerable<Linegram> SalientLines(int maxSize, HunkRangeInfo chunk)
+        {
+            var salient = chunk.DiffLines
+            .Select(line =>
+                new
+                {
+                    Salience = reader.LineSalience(2, line),
+                    Line = line
+                }
+            )
+            .OrderBy(salientLine => 1 - salientLine.Salience)
+            .ToList();
+
+            var lines = salient
+            .Take(maxSize)
+            .Select(salientLine => new Linegram() { Line = salientLine.Line });
+            return lines;
         }
     }
 }
