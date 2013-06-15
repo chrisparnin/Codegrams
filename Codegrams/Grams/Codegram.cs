@@ -9,10 +9,12 @@ namespace Codegrams.Grams
     public class Codegram
     {
         public string Author { get; set; }
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
         public string Message { get; set; }
 
         public List<Filegram> Filegrams { get; set; }
+
+        public string CommitUrl { get; set; }
 
         public void Print()
         {

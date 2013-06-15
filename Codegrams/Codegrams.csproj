@@ -78,6 +78,7 @@
     <Compile Include="Services\DiffParsing\HunkRange.cs" />
     <Compile Include="Services\DiffParsing\HunkRangeInfo.cs" />
     <Compile Include="Grams\Codegram.cs" />
+    <Compile Include="Services\Export\AsMarkdown.cs" />
     <Compile Include="Services\Metrics\LineSimiliarity.cs" />
     <Compile Include="Services\Summary\CodegramGenerator.cs" />
     <Compile Include="Services\Summary\WorkingSet.cs" />

@@ -32,6 +32,9 @@ namespace Codegrams.Services.Summary
 
             var codegram = new Codegram();
             codegram.Filegrams = new List<Filegram>();
+            codegram.Author = diffInfo.Author;
+            codegram.Date = diffInfo.Date;
+            codegram.Message = diffInfo.Message;
 
             CrossSimiliarity(diffInfo.Files);
 

@@ -12,6 +12,16 @@ namespace Codegrams.Services.Summary
         {
             // Meta: Issues of representation...can lift?
 
+            // -                return new StringEval(dateFormatter.Format(dt));
+            // +                return new StringEval(dateFormatter.Format(dt, CultureInfo.CurrentCulture));
+
+            // Perfect inline should merge lines and highlight inner difference.
+
+            // https://github.com/db42/FBReader/commit/0997bc8433eba662d23d661b66b9d0b86c658202
+            // Delete of whole file should just be line with interface/class.
+            // Skip .csproj entry
+
+
             // Repeat until converge:
             //    Sample 100 commits
             //    Categorize changes.
