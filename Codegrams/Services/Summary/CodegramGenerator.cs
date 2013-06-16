@@ -8,6 +8,8 @@ using Codegrams.Grams;
 using Codegrams.Reader;
 using Codegrams.Services.DiffParsing;
 using Codegrams.Services.Metrics;
+using Codegrams.Patterns.Basic;
+using Codegrams.Patterns;
 
 namespace Codegrams.Services.Summary
 {
@@ -51,6 +53,10 @@ namespace Codegrams.Services.Summary
                 }
                 codegram.Filegrams.Add(filegram);
             }
+
+            // Temp placement: Apply patterns
+            Pattern pattern = new RemovedFilePattern();
+            pattern.Rewrite(codegram);
 
             return codegram;
         }
