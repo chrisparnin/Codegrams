@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Patterns\Basic\RemovedFilePattern.cs" />
     <Compile Include="Patterns\Pattern.cs" />
+    <Compile Include="Patterns\Specialized\IntroduceCultureInfoPattern.cs" />
     <Compile Include="Services\DiffParsing\DiffInfo.cs" />
     <Compile Include="Grams\Filegram.cs" />
     <Compile Include="Grams\Linegram.cs" />
