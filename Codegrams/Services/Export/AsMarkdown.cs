@@ -24,7 +24,7 @@ namespace Codegrams.Services.Export
 
                 foreach (var line in file.Linegrams)
                 {
-                    w.Write("     {1}", line.LineNumber, line.Line);
+                    w.WriteLine("     {1}", line.LineNumber, line.Line.TrimEnd());
                 }
             }
             return w.ToString();
