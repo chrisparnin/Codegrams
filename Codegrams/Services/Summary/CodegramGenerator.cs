@@ -123,11 +123,13 @@ namespace Codegrams.Services.Summary
                 new
                 {
                     Salience = reader.LineSalience(2, line),
-                    Line = line
+                    Line = line,
                 }
             )
             .OrderBy(salientLine => 1 - salientLine.Salience)
             .ToList();
+
+            //chunk.NewHunkRange;
 
             var lines = salient
             .Take(maxSize)

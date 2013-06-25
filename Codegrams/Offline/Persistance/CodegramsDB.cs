@@ -24,12 +24,12 @@ namespace Codegrams.Persistance
             var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             if (Environment.Is64BitProcess) // .NET 4.0
             {
-                path = Path.Combine(path, "x64", "SQLite.Interop.dll");
+                path = Path.Combine(path, "Library", "x64", "SQLite.Interop.dll");
             }
             else
             {
                 // X32
-                path = Path.Combine(path, "x86", "SQLite.Interop.dll");
+                path = Path.Combine(path, "Library", "x86", "SQLite.Interop.dll");
             }
             NativeMethods.LoadLibrary(path);
         }

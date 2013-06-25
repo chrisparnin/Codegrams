@@ -80,12 +80,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Patterns\Basic\RemovedFilePattern.cs" />
-    <Compile Include="Patterns\Pattern.cs" />
-    <Compile Include="Patterns\Specialized\IntroduceCultureInfoPattern.cs" />
+    <Compile Include="Models\Patterns\Basic\RemovedFilePattern.cs" />
+    <Compile Include="Models\Patterns\Pattern.cs" />
+    <Compile Include="Models\Patterns\Specialized\IntroduceCultureInfoPattern.cs" />
+    <Compile Include="Services\DiffAnalysis\DiffChain.cs" />
+    <Compile Include="Services\DiffAnalysis\FileDiffGraph2.cs" />
+    <Compile Include="Services\DiffAnalysis\FileSnapshot2.cs" />
+    <Compile Include="Services\DiffAnalysis\LineStatus.cs" />
+    <Compile Include="Services\DiffAnalysis\SimiliarityTool.cs" />
     <Compile Include="Services\DiffParsing\DiffInfo.cs" />
-    <Compile Include="Grams\Filegram.cs" />
-    <Compile Include="Grams\Linegram.cs" />
+    <Compile Include="Models\Grams\Filegram.cs" />
+    <Compile Include="Models\Grams\Linegram.cs" />
     <Compile Include="Offline\Analysis\CodegramBuilder.cs" />
     <Compile Include="Offline\Analysis\Counting\CodegramCounter.cs" />
     <Compile Include="Offline\Analysis\Counting\Patterns.cs" />
@@ -104,18 +109,20 @@
     <Compile Include="Services\DiffParsing\GitDiffParser.cs" />
     <Compile Include="Services\DiffParsing\HunkRange.cs" />
     <Compile Include="Services\DiffParsing\HunkRangeInfo.cs" />
-    <Compile Include="Grams\Codegram.cs" />
+    <Compile Include="Models\Grams\Codegram.cs" />
     <Compile Include="Services\Export\AsMarkdown.cs" />
     <Compile Include="Services\Export\AsMarkdownHtml.cs" />
     <Compile Include="Services\Metrics\LineSimiliarity.cs" />
     <Compile Include="Services\Summary\CodegramGenerator.cs" />
     <Compile Include="Services\Summary\WorkingSet.cs" />
+    <Compile Include="Models\Strategies\Entropy.cs" />
+    <Compile Include="Models\Strategies\LowLineNumber.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="x64\SQLite.Interop.dll">
+    <Content Include="Library\x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="x86\SQLite.Interop.dll">
+    <Content Include="Library\x86\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
