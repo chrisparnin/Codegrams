@@ -2,27 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Ganji_Connector.Services.LocalRepository;
-using Ganji.EF.Entities.Artifacts;
-using Microsoft.Ganji_Connector.Util;
-using Microsoft.Ganji_Connector.Services.Diff.Providers;
-using Microsoft.VisualStudio.Text.Differencing;
+using Codegrams.Models.Diffs;
 
 namespace Codegrams.Services.DiffAnalysis
 {
     public class FileDiffGraph2
     {
-        List<FileSnapshot2> m_snapshots;
-        VSDiffProvider m_diffEngine;
+        List<FileSnapshot> m_snapshots;
         public String CurrentFullName { get; private set; }
 
-        protected FileDiffGraph2(VSDiffProvider diffEngine)
+        protected FileDiffGraph2()
         {
-            this.m_diffEngine = diffEngine;
-            m_snapshots = new List<FileSnapshot2>();
+            m_snapshots = new List<FileSnapshot>();
         }
 
-        public IEnumerable<FileSnapshot2> WalkBackwards()
+        public IEnumerable<FileSnapshot> WalkBackwards()
         {
             for (int i = m_snapshots.Count - 1; i >= 0; i--)
             {
@@ -30,23 +24,26 @@ namespace Codegrams.Services.DiffAnalysis
             }
         }
 
-        public FileSnapshot2 Last()
+        public FileSnapshot Last()
         {
             return m_snapshots.LastOrDefault();
         }
 
-        public List<FileSnapshot2> Snapshots { get { return m_snapshots; } }
+        public List<FileSnapshot> Snapshots { get { return m_snapshots; } }
 
 
-        public static FileDiffGraph2 GetFileDiffGraph(IGanjiConnectorService ganjiConnector, Document doc, IEnumerable<Commit> commits, VSDiffProvider diffEngine)
+        public static FileDiffGraph2 GetFileDiffGraph(IEnumerable<FileDiff> fileDiffs)
         {
-            var ordered = commits.OrderBy(c => c.Timestamp);
+            var ordered = fileDiffs.OrderBy(f => f.ParentCommit.Timestamp);
             if (ordered.Count() == 0)
                 return null;
 
-            FileDiffGraph2 graph = new FileDiffGraph2(diffEngine);
-            graph.CurrentFullName = doc.CurrentFullName;
-            var filesnapshots = graph.CollectFilesnapshots(ganjiConnector, doc, ordered);
+            FileDiffGraph2 graph = new FileDiffGraph2();
+            graph.CurrentFullName = ordered.First().FileName;
+            var filesnapshots = fileDiffs.Select(file => new FileSnapshot(file.FileName)
+            {
+
+            }).ToList();
             graph.m_snapshots = filesnapshots;
             foreach (var snapshot in graph.m_snapshots)
             {
@@ -105,58 +102,6 @@ namespace Codegrams.Services.DiffAnalysis
         }
 
 
-
-        protected List<FileSnapshot2> CollectFilesnapshots(IGanjiConnectorService ganjiConnector, Document doc, IEnumerable<Commit> ordered)
-        {
-            var leftCommit = ordered.FirstOrDefault();
-            if (leftCommit == null)
-                return new List<FileSnapshot2>();
-
-            var list = new List<FileSnapshot2>();
-            foreach (var commit in ordered.Skip(1))
-            {
-                var rightCommit = commit;
-
-                using (var firstTmp = new TempFile())
-                using (var lastTmp = new TempFile())
-                {
-                    var firstText = ganjiConnector.ReadCommit(leftCommit.RepositoryId, doc.CurrentFullName);
-                    if (firstText == null)
-                        break;
-                    var firstTextLines = firstText.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None).ToList();
-                    System.IO.File.WriteAllText(firstTmp.Path, firstText);
-
-                    var lastText = ganjiConnector.ReadCommit(rightCommit.RepositoryId, doc.CurrentFullName);
-                    if (lastText == null)
-                        break;
-
-                    var lastTextLines = lastText.Split(new string[] { System.Environment.NewLine }, StringSplitOptions.None).ToList();
-                    System.IO.File.WriteAllText(lastTmp.Path, lastText);
-
-                    var difflet = m_diffEngine.DiffFiles(firstTmp.Path, lastTmp.Path);
-                    if (difflet.Differences.Count > 0)
-                    {
-                        list.Add(new FileSnapshot2(doc.CurrentFullName)
-                        {
-                            Difflet = difflet,
-                            Differences = difflet.Differences.ToList(),
-                            LeftTextLines = firstTextLines,
-                            LeftText = firstText,
-                            RightTextLines = lastTextLines,
-                            RightText = lastText,
-                            TimestampLeft = leftCommit.Timestamp,
-                            TimestampRight = rightCommit.Timestamp,
-                            LeftCommitId = leftCommit.Id,
-                            RightCommitId = rightCommit.Id
-                        });
-                    }
-                }
-
-                leftCommit = rightCommit;
-            }
-            // Remove empty files...
-            return list.Where(s => s.LeftText != "" && s.RightText != "").ToList();
-        }
 
     }
 }

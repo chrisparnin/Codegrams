@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Codegrams.Models.Diffs;
 
 namespace Codegrams.Services.DiffParsing
 {
@@ -41,6 +42,15 @@ namespace Codegrams.Services.DiffParsing
                    ).ToList();
                 diffInfo.Files.Add(new FileDiff { Hunks = hunks });
             }
+
+            foreach( var file in diffInfo.Files )
+            {
+                if (file.Hunks.Any())
+                {
+                    file.FileName = file.Hunks.First().FileName;
+                }
+            }
+
             return diffInfo;
         }
 

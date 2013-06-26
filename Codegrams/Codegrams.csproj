@@ -34,8 +34,9 @@
     <Reference Include="Ionic.Zip">
       <HintPath>..\packages\DotNetZip.1.9.1.8\lib\net20\Ionic.Zip.dll</HintPath>
     </Reference>
-    <Reference Include="MarkdownSharp">
-      <HintPath>lib\MarkdownSharp.dll</HintPath>
+    <Reference Include="MarkdownSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Library\MarkdownSharp.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.4.5.5\lib\net40\Newtonsoft.Json.dll</HintPath>
@@ -80,15 +81,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\ListExtensions.cs" />
+    <Compile Include="Models\Diffs\Commit.cs" />
+    <Compile Include="Models\Diffs\Difference.cs" />
+    <Compile Include="Models\Diffs\Difflet.cs" />
+    <Compile Include="Models\Diffs\Match.cs" />
+    <Compile Include="Models\Diffs\Span.cs" />
     <Compile Include="Models\Patterns\Basic\RemovedFilePattern.cs" />
     <Compile Include="Models\Patterns\Pattern.cs" />
     <Compile Include="Models\Patterns\Specialized\IntroduceCultureInfoPattern.cs" />
     <Compile Include="Services\DiffAnalysis\DiffChain.cs" />
     <Compile Include="Services\DiffAnalysis\FileDiffGraph2.cs" />
-    <Compile Include="Services\DiffAnalysis\FileSnapshot2.cs" />
+    <Compile Include="Services\DiffAnalysis\FileSnapshot.cs" />
     <Compile Include="Services\DiffAnalysis\LineStatus.cs" />
     <Compile Include="Services\DiffAnalysis\SimiliarityTool.cs" />
-    <Compile Include="Services\DiffParsing\DiffInfo.cs" />
+    <Compile Include="Models\Diffs\DiffInfo.cs" />
     <Compile Include="Models\Grams\Filegram.cs" />
     <Compile Include="Models\Grams\Linegram.cs" />
     <Compile Include="Offline\Analysis\CodegramBuilder.cs" />
@@ -105,10 +112,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Offline\Reader\CodegramsReader.cs" />
     <Compile Include="Offline\Reader\ReadCommands.cs" />
-    <Compile Include="Services\DiffParsing\FileDiff.cs" />
+    <Compile Include="Models\Diffs\FileDiff.cs" />
     <Compile Include="Services\DiffParsing\GitDiffParser.cs" />
-    <Compile Include="Services\DiffParsing\HunkRange.cs" />
-    <Compile Include="Services\DiffParsing\HunkRangeInfo.cs" />
+    <Compile Include="Models\Diffs\HunkRange.cs" />
+    <Compile Include="Models\Diffs\HunkRangeInfo.cs" />
     <Compile Include="Models\Grams\Codegram.cs" />
     <Compile Include="Services\Export\AsMarkdown.cs" />
     <Compile Include="Services\Export\AsMarkdownHtml.cs" />

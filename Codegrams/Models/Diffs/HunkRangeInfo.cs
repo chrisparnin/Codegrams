@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Codegrams.Services.DiffParsing
+namespace Codegrams.Models.Diffs
 {
     public class HunkRangeInfo
     {

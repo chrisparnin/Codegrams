@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Codegrams.Services.DiffParsing
+namespace Codegrams.Models.Diffs
 {
     public class DiffInfo
     {

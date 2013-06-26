@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.Text.Differencing;
 using System.Diagnostics;
+using Codegrams.Models.Diffs;
 
 namespace Codegrams.Services.DiffAnalysis
 {
@@ -29,8 +29,8 @@ namespace Codegrams.Services.DiffAnalysis
         public int? Start {get;set;}
         public int? End   {get;set;}
         public DiffChainType Kind { get; set; }
-        public FileSnapshot2 StartSnap { get; set; }
-        public FileSnapshot2 EndSnap { get; set; }
+        public FileSnapshot StartSnap { get; set; }
+        public FileSnapshot EndSnap { get; set; }
 
         public DiffChain Forward()
         {
@@ -51,7 +51,7 @@ namespace Codegrams.Services.DiffAnalysis
         }
 
 
-        public static DiffChain ConstructForwardDiffChain( FileSnapshot2 a, FileSnapshot2 next, int right )
+        public static DiffChain ConstructForwardDiffChain( FileSnapshot a, FileSnapshot next, int right )
         {
             try
             {
@@ -74,7 +74,7 @@ namespace Codegrams.Services.DiffAnalysis
             }
         }
 
-        public static DiffChain ConstructBackwardDiffChain(FileSnapshot2 a, FileSnapshot2 next, int right)
+        public static DiffChain ConstructBackwardDiffChain(FileSnapshot a, FileSnapshot next, int right)
         {
             DiffChain backward = new DiffChain();
             backward.Start = right;
@@ -158,7 +158,7 @@ namespace Codegrams.Services.DiffAnalysis
             //throw new ArgumentException("Invalidate Diff Chain State: " + aStatus + "=>" + nextStatus);
         }
 
-        protected DiffChainCapType LeftFromRightStatus(FileSnapshot2 snapshot, int otherRight)
+        protected DiffChainCapType LeftFromRightStatus(FileSnapshot snapshot, int otherRight)
         {
             // Transform to local index.
             int localLeft = otherRight;
@@ -193,7 +193,7 @@ namespace Codegrams.Services.DiffAnalysis
             throw new ArgumentException("Invalid argument to LeftToRightStatus");
         }
 
-        protected DiffChainCapType SelfStatusFromRight(FileSnapshot2 snapshot, int right)
+        protected DiffChainCapType SelfStatusFromRight(FileSnapshot snapshot, int right)
         {
             int localRight = right;
 
@@ -227,7 +227,7 @@ namespace Codegrams.Services.DiffAnalysis
             throw new ArgumentException("Invalid argument to RightToLeftStatus");
         }
 
-        protected DiffChainCapType RightFromLeftStatus(FileSnapshot2 snapshot, int otherLeft)
+        protected DiffChainCapType RightFromLeftStatus(FileSnapshot snapshot, int otherLeft)
         {
             // Transform to local index.
             int localRight = otherLeft;

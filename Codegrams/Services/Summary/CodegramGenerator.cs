@@ -10,6 +10,7 @@ using Codegrams.Services.DiffParsing;
 using Codegrams.Services.Metrics;
 using Codegrams.Patterns.Basic;
 using Codegrams.Patterns;
+using Codegrams.Models.Diffs;
 
 namespace Codegrams.Services.Summary
 {
@@ -31,7 +32,11 @@ namespace Codegrams.Services.Summary
         {
             GitDiffParser parser = new GitDiffParser();
             var diffInfo = parser.Parse(diffContent);
+            return GenerateCodegramFromDiffContent(diffInfo, maxSize);
+        }
 
+        public Codegram GenerateCodegramFromDiffContent(DiffInfo diffInfo, int maxSize)
+        {
             var codegram = new Codegram();
             codegram.Filegrams = new List<Filegram>();
             codegram.Author = diffInfo.Author;

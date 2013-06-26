@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Codegrams.Models.Diffs;
 using Roslyn.Compilers.CSharp;
-using Microsoft.VisualStudio.Text.Differencing;
-using Microsoft.Ganji_Connector.Util;
-using Microsoft.Ganji_Connector.Services.Analysis.SnapshotsGraph.Model;
+using Codegrams.Extensions;
 
 namespace Codegrams.Services.DiffAnalysis
 {
-    public class FileSnapshot2
+    public class FileSnapshot
     {
-        public FileSnapshot2(string name)
+        public FileSnapshot(string name)
         {
             this.Name = name;
             RightLineStatus = new Dictionary<int, LineStatus>();
@@ -25,7 +24,7 @@ namespace Codegrams.Services.DiffAnalysis
         public string RightText { get; set; }
         public List<string> LeftTextLines { get; set; }
         public string LeftText { get; set; }
-        public IHierarchicalDifferenceCollection Difflet { get; set; }
+        public Difflet Difflet { get; set; }
         public List<Difference> Differences { get; set; }
 
         public long LeftCommitId { get; set; }
@@ -209,7 +208,7 @@ namespace Codegrams.Services.DiffAnalysis
             {
                 if (rightAST == null)
                 {
-                    rightAST = SyntaxTree.ParseCompilationUnit(RightText);
+                    rightAST = SyntaxTree.ParseText(RightText);
                 }
                 return rightAST;
             }
@@ -222,7 +221,7 @@ namespace Codegrams.Services.DiffAnalysis
             {
                 if (leftAST == null)
                 {
-                    leftAST = SyntaxTree.ParseCompilationUnit(LeftText);
+                    leftAST = SyntaxTree.ParseText(LeftText);
                 }
                 return leftAST;
             }
@@ -300,9 +299,13 @@ namespace Codegrams.Services.DiffAnalysis
         [STAThread]
         public static void Main(String[] args)
         {
-            FileSnapshot2 snapshot = new FileSnapshot2("test.cs");
+            FileSnapshot snapshot = new FileSnapshot("test.cs");
 
-            Difference d = new Difference(new VisualStudio.Text.Span(0,2), new VisualStudio.Text.Span(0,4), null, null );
+            Difference d = new Difference()
+            {
+                Left  = new Span(){ Start = 0, Length = 2 },
+                Right = new Span(){ Start = 0, Length = 4 }
+            };
             snapshot.LeftTextLines = new String[]
             {
                 "Difference d = new Difference(new VisualStudio.Text.Span(0,2), new VisualStudio.Text.Span(0,4), null, null );\n",

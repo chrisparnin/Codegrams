@@ -18,7 +18,7 @@ namespace Codegrams.Services.DiffAnalysis
 
         public int MaxChurn { get; set; }
 
-        public Services.SnapshotsGraph.Model.DiffChain FurthestVersion { get; set; }
+        public DiffChain FurthestVersion { get; set; }
 
         public bool Covered { get; set; }
     }
