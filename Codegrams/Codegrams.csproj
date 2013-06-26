@@ -91,7 +91,7 @@
     <Compile Include="Models\Patterns\Pattern.cs" />
     <Compile Include="Models\Patterns\Specialized\IntroduceCultureInfoPattern.cs" />
     <Compile Include="Services\DiffAnalysis\DiffChain.cs" />
-    <Compile Include="Services\DiffAnalysis\FileDiffGraph2.cs" />
+    <Compile Include="Services\DiffAnalysis\FileDiffGraph.cs" />
     <Compile Include="Services\DiffAnalysis\FileSnapshot.cs" />
     <Compile Include="Services\DiffAnalysis\LineStatus.cs" />
     <Compile Include="Services\DiffAnalysis\SimiliarityTool.cs" />

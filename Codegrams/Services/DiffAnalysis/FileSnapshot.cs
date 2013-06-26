@@ -17,7 +17,7 @@ namespace Codegrams.Services.DiffAnalysis
         }
 
         public string Name { get; set; }
-        public FileDiffGraph2 Graph { get; set; }
+        public FileDiffGraph Graph { get; set; }
         public DateTime TimestampLeft { get; set; }
         public DateTime TimestampRight { get; set; }
         public List<string> RightTextLines { get; set; }

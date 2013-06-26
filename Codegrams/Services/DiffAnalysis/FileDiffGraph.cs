@@ -6,12 +6,12 @@ using Codegrams.Models.Diffs;
 
 namespace Codegrams.Services.DiffAnalysis
 {
-    public class FileDiffGraph2
+    public class FileDiffGraph
     {
         List<FileSnapshot> m_snapshots;
         public String CurrentFullName { get; private set; }
 
-        protected FileDiffGraph2()
+        protected FileDiffGraph()
         {
             m_snapshots = new List<FileSnapshot>();
         }
@@ -32,16 +32,27 @@ namespace Codegrams.Services.DiffAnalysis
         public List<FileSnapshot> Snapshots { get { return m_snapshots; } }
 
 
-        public static FileDiffGraph2 GetFileDiffGraph(IEnumerable<FileDiff> fileDiffs)
+        public static FileDiffGraph GetFileDiffGraph(IEnumerable<FileDiff> fileDiffs)
         {
             var ordered = fileDiffs.OrderBy(f => f.ParentCommit.Timestamp);
             if (ordered.Count() == 0)
                 return null;
 
-            FileDiffGraph2 graph = new FileDiffGraph2();
+            FileDiffGraph graph = new FileDiffGraph();
             graph.CurrentFullName = ordered.First().FileName;
             var filesnapshots = fileDiffs.Select(file => new FileSnapshot(file.FileName)
             {
+                LeftTextLines = file.BeforeTextLines.ToList(),
+                RightTextLines = file.AfterTextLines.ToList(),
+                LeftText = file.BeforeText,
+                RightText = file.AfterText,
+
+                Differences = file.Hunks.Select(hunk => new Difference()
+                {
+                    Left = new Span() { Start = hunk.OriginalHunkRange.StartingLineNumber, Length = hunk.OriginalHunkRange.NumberOfLines },
+                    Right = new Span() { Start = hunk.NewHunkRange.StartingLineNumber, Length = hunk.NewHunkRange.NumberOfLines },
+                    DifferenceType = hunk.IsAddition ? DifferenceType.Add : (hunk.IsDeletion ? DifferenceType.Remove : DifferenceType.Change)
+                }).ToList()
 
             }).ToList();
             graph.m_snapshots = filesnapshots;
