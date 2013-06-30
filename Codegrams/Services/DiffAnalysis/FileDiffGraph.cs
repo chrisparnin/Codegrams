@@ -46,7 +46,6 @@ namespace Codegrams.Services.DiffAnalysis
                 RightTextLines = file.AfterTextLines.ToList(),
                 LeftText = file.BeforeText,
                 RightText = file.AfterText,
-
                 Differences = file.Hunks.Select(hunk => new Difference()
                 {
                     Left = new Span() { Start = hunk.OriginalHunkRange.StartingLineNumber, Length = hunk.OriginalHunkRange.NumberOfLines },
@@ -66,6 +65,7 @@ namespace Codegrams.Services.DiffAnalysis
 
             return graph;
         }
+
 
         protected void Chain()
         {
