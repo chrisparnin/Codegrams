@@ -126,7 +126,7 @@ namespace Codegrams.Services.DiffParsing
                         }
                         else if (line.StartsWith(ADD_PREFIX))
                         {
-                            state = "DIFF_PLUS";
+                            state = "DIFF_MOD";
                             push = true;
                         }
                         else
