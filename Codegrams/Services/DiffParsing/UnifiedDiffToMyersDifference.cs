@@ -9,15 +9,13 @@ namespace Codegrams.Services.DiffParsing
 {
     public class UnifiedDiffToMyersDifference
     {
-        const string REM_PREFIX = "- ";
-        const string ADD_PREFIX = "+ ";
+        const string REM_PREFIX = "-";
+        const string ADD_PREFIX = "+";
 
-        private IEnumerable<Difference> DifferenceFromHunk(List<HunkRangeInfo> hunks)
+        public static IEnumerable<Difference> DifferenceFromHunk(List<HunkRangeInfo> hunks)
         {
             foreach (var hunk in hunks)
             {
-                int start = 0;
-
                 int leftStart = 0;
                 int rightStart = 0;
                 int leftLineOffset = 0;
@@ -38,7 +36,7 @@ namespace Codegrams.Services.DiffParsing
                         {
                             state = "DONE";
                         }
-                        else if (line.StartsWith(REM_PREFIX) || line.StartsWith("+ "))
+                        else if (line.StartsWith(REM_PREFIX) || line.StartsWith(ADD_PREFIX))
                         {
                             state = "DIFF_START";
                         }
@@ -54,6 +52,7 @@ namespace Codegrams.Services.DiffParsing
                         if (line.StartsWith(REM_PREFIX))
                         {
                             leftStart = leftLineOffset;
+                            rightStart = rightLineOffset;
                             state = "DIFF_MINUS";
                         }
                         else if (line.StartsWith(ADD_PREFIX))
@@ -62,11 +61,18 @@ namespace Codegrams.Services.DiffParsing
                             rightStart = rightLineOffset;
                             state = "DIFF_PLUS";
                         }
-                        lines = IncrementLineState(lines, ref leftLineOffset, ref rightLineOffset);
+                        push = true;
                     }
                     else if (state == "DIFF_MINUS")
                     {
-                        if (line.StartsWith(REM_PREFIX))
+                        if (line == null)
+                        {
+                            yield return EmitRemove(leftStart, leftLineOffset,
+                                       rightStart, rightLineOffset,
+                                       hunk);
+                            state = "DONE";
+                        }
+                        else if (line.StartsWith(REM_PREFIX))
                         {
                             state = "DIFF_MINUS";
                             push = true;
@@ -75,16 +81,27 @@ namespace Codegrams.Services.DiffParsing
                         {
                             rightStart = rightLineOffset;
                             state = "DIFF_MOD";
+                            push = true;
                         }
                         else
                         {
                             // EMIT DEL
+                            yield return EmitRemove(leftStart, leftLineOffset,
+                                       rightStart, rightLineOffset,
+                                       hunk);
                             state = "NEW";
                         }
                     }
                     else if (state == "DIFF_PLUS")
                     {
-                        if (line.StartsWith(ADD_PREFIX))
+                        if (line == null)
+                        {
+                            yield return EmitNew(leftStart, leftLineOffset,
+                                       rightStart, rightLineOffset,
+                                       hunk);
+                            state = "DONE";
+                        }
+                        else if (line.StartsWith(ADD_PREFIX))
                         {
                             state = "DIFF_PLUS";
                             push = true;
@@ -92,19 +109,32 @@ namespace Codegrams.Services.DiffParsing
                         else
                         {
                             // EMIT ADD
+                            yield return EmitNew(leftStart, leftLineOffset,
+                                       rightStart, rightLineOffset,
+                                       hunk);
                             state = "NEW";
                         }
                     }
                     else if (state == "DIFF_MOD")
                     {
-                        if (line.StartsWith(ADD_PREFIX))
+                        if (line == null)
+                        {
+                            yield return EmitChange(leftStart, leftLineOffset,
+                                       rightStart, rightLineOffset,
+                                       hunk);
+                            state = "DONE";
+                        }
+                        else if (line.StartsWith(ADD_PREFIX))
                         {
                             state = "DIFF_PLUS";
                             push = true;
                         }
                         else
                         {
-                            // EMIT MOD
+                            // EMIT Change
+                            yield return EmitChange(leftStart, leftLineOffset,
+                                       rightStart, rightLineOffset,
+                                       hunk);
                             state = "NEW";
                         }
                     }
@@ -118,7 +148,7 @@ namespace Codegrams.Services.DiffParsing
             }
         }
 
-        private IEnumerable<string> IncrementLineState(IEnumerable<string> lines, ref int leftLineOffset, ref int rightLineOffset)
+        public static IEnumerable<string> IncrementLineState(IEnumerable<string> lines, ref int leftLineOffset, ref int rightLineOffset)
         {
             var line = lines.Take(1).SingleOrDefault();
             if (line != null)
@@ -127,7 +157,7 @@ namespace Codegrams.Services.DiffParsing
                 {
                     leftLineOffset++;
                 }
-                else if (line.StartsWith("+ "))
+                else if (line.StartsWith(ADD_PREFIX))
                 {
                     rightLineOffset++;
                 }
@@ -141,53 +171,70 @@ namespace Codegrams.Services.DiffParsing
             return lines.Skip(1);
         }
 
-        private Difference EmitNew(int start, int length, HunkRangeInfo hunk)
+        // Difference based on Visual Studio's Difference structure.
+        // http://msdn.microsoft.com/en-us/library/microsoft.visualstudio.text.differencing.difference.aspx
+        // A span can be 0-length:
+        // http://msdn.microsoft.com/en-us/library/microsoft.visualstudio.text.span.aspx
+        // This structure represents an immutable integer interval that describes a range of values, 
+        // from Start to End. It is closed on the left and open on the right: [Start .. End). 
+
+        public static Difference EmitNew(int leftStart, int leftEnd, int rightStart,
+            int rightEnd, HunkRangeInfo hunk)
         {
             return new Difference()
             {
                 DifferenceType = DifferenceType.Add,
                 Left = new Span()
                 {
-                    Start = hunk.NewHunkRange.StartingLineNumber
+                    Start = hunk.OriginalHunkRange.StartingLineNumber + leftStart,
+                    Length = 0, // Zero-length
+                    End = hunk.OriginalHunkRange.StartingLineNumber + leftEnd
                 },
                 Right = new Span()
                 {
-                    Start = start,
-                    Length = length
+                    Start = rightStart + hunk.NewHunkRange.StartingLineNumber,
+                    Length = rightEnd - rightStart,
+                    End = rightEnd + hunk.NewHunkRange.StartingLineNumber
                 }
             };
         }
 
-        private Difference EmitChange(int start, int length, HunkRangeInfo hunk)
+        public static Difference EmitChange(int leftStart, int leftEnd, int rightStart, int rightEnd, HunkRangeInfo hunk)
         {
             return new Difference()
             {
                 DifferenceType = DifferenceType.Change,
                 Left = new Span()
                 {
-                    Start = hunk.NewHunkRange.StartingLineNumber
+                    Start = hunk.OriginalHunkRange.StartingLineNumber + leftStart,
+                    Length = leftEnd - leftStart,
+                    End = hunk.OriginalHunkRange.StartingLineNumber + leftEnd
                 },
                 Right = new Span()
                 {
-                    Start = start,
-                    Length = length
+                    Start = rightStart + hunk.NewHunkRange.StartingLineNumber,
+                    Length = rightEnd - rightStart,
+                    End = rightEnd + hunk.NewHunkRange.StartingLineNumber
                 }
             };
         }
 
-        private Difference EmitRemove(int start, int length, HunkRangeInfo hunk)
+        public static Difference EmitRemove(int leftStart, int leftEnd, int rightStart, int rightEnd, HunkRangeInfo hunk)
         {
             return new Difference()
             {
                 DifferenceType = DifferenceType.Remove,
                 Left = new Span()
                 {
-                    Start = hunk.NewHunkRange.StartingLineNumber
+                    Start = hunk.OriginalHunkRange.StartingLineNumber + leftStart,
+                    Length = leftEnd - leftStart,
+                    End = hunk.OriginalHunkRange.StartingLineNumber + leftEnd
                 },
                 Right = new Span()
                 {
-                    Start = start,
-                    Length = length
+                    Start = rightStart + hunk.NewHunkRange.StartingLineNumber,
+                    Length = 0, // Zero-length
+                    End = rightEnd + hunk.NewHunkRange.StartingLineNumber
                 }
             };
         }

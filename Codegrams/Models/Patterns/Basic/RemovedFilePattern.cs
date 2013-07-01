@@ -15,7 +15,7 @@ namespace Codegrams.Patterns.Basic
             // back to the canonical tree matching problem in compilers.
             foreach( var file in gram.Filegrams )
             {
-                if( file.Linegrams.All(line => line.Line.StartsWith("- ") ) )
+                if( file.Linegrams.All(line => line.Line.StartsWith("-") ) )
                 {
                     file.Linegrams = new List<Grams.Linegram>();
                 }

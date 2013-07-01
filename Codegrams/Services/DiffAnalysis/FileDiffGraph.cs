@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Codegrams.Models.Diffs;
+using Codegrams.Services.DiffParsing;
 
 namespace Codegrams.Services.DiffAnalysis
 {
@@ -46,12 +47,13 @@ namespace Codegrams.Services.DiffAnalysis
                 RightTextLines = file.AfterTextLines.ToList(),
                 LeftText = file.BeforeText,
                 RightText = file.AfterText,
-                Differences = file.Hunks.Select(hunk => new Difference()
+                Differences = UnifiedDiffToMyersDifference.DifferenceFromHunk( file.Hunks ).ToList()
+                /*file.Hunks.Select(hunk => new Difference()
                 {
                     Left = new Span() { Start = hunk.OriginalHunkRange.StartingLineNumber, Length = hunk.OriginalHunkRange.NumberOfLines },
                     Right = new Span() { Start = hunk.NewHunkRange.StartingLineNumber, Length = hunk.NewHunkRange.NumberOfLines },
                     DifferenceType = hunk.IsAddition ? DifferenceType.Add : (hunk.IsDeletion ? DifferenceType.Remove : DifferenceType.Change)
-                }).ToList()
+                }).ToList()*/
 
             }).ToList();
             graph.m_snapshots = filesnapshots;
